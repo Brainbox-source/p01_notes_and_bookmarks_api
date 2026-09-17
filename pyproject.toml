@@ -1,0 +1,28 @@
+[project]
+name = "p01-notes-and-bookmarks-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Brainbox-source", email = "leviprecious701@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.31.0",
+    "fastapi[standard]>=0.141.1",
+    "pydantic-settings>=2.15.0",
+    "uvicorn[standard]>=0.52.4",
+]
+
+[project.scripts]
+p01-notes-and-bookmarks-api = "p01_notes_and_bookmarks_api:main"
+
+[tool.fastapi]
+entrypoint = "p01_notes_and_bookmarks_api.main:app"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = []
