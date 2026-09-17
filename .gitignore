@@ -11,3 +11,6 @@ wheels/
 
 # Environments and secrets
 .env
+
+# Other files
+knowledge-gained.md
