@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 import asyncpg
 from fastapi import FastAPI, Request
 
+# import the router
+from .api import notes
 from .core.config import settings
 
 
@@ -25,6 +27,9 @@ async def lifespan(app: FastAPI):
 
 # initialize the FastAPI app with the lifespan
 app = FastAPI(lifespan=lifespan)
+
+# register the router with the main app
+app.include_router(notes.router)
 
 
 # endpoint to verify the database connection
