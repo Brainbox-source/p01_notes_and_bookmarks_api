@@ -1,7 +1,7 @@
 import asyncpg
 from fastapi import APIRouter, HTTPException, Request
 
-from ..db.notes import insert_note
+from ..db.notes import fetch_all_notes, insert_note
 from ..schemas.note import Note, NoteEntry
 
 # create a router specifically for notes
@@ -13,6 +13,7 @@ def get_db_pool(request: Request) -> asyncpg.Pool:
     return request.app.state.db_pool
 
 
+# api route and endpoint to create a note
 @router.post("/", response_model=Note, status_code=201)
 async def create_note(note_data: NoteEntry, request: Request):
     """create a new note"""
@@ -23,3 +24,17 @@ async def create_note(note_data: NoteEntry, request: Request):
         return dict(record)
     except asyncpg.PostgresError:
         raise HTTPException(status_code=500, detail="failed to create a note")
+
+
+# api route and endpoint to fetch all notes
+@router.get("/", response_model=list[Note])
+async def get_all_notes(request: Request):
+    """retrieve all notes"""
+    pool = get_db_pool(request)
+
+    try:
+        records = await fetch_all_notes(pool)
+        # convert the list of asyncpg.Records into a list of standard dictionaries
+        return [dict(record) for record in records]
+    except asyncpg.PostgresError:
+        raise HTTPException(status_code=500, detail="failed to fetch notes")
