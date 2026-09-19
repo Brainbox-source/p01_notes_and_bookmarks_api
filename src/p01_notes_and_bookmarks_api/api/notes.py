@@ -20,6 +20,6 @@ async def create_note(note_data: NoteEntry, request: Request):
 
     try:
         record = await insert_note(pool, note_data)
-        return record
+        return dict(record)
     except asyncpg.PostgresError:
         raise HTTPException(status_code=500, detail="failed to create a note")
