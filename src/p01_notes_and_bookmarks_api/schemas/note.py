@@ -20,3 +20,9 @@ class Note(BaseModel):
 
     # pydantic v2 configuration to allow parsing from asyncpg Records
     model_config = ConfigDict(from_attributes=True)
+
+
+# schema for updating notes
+class NoteModification(BaseModel):
+    title: str | None = Field(None, max_length=255)
+    content: str | None = Field(None)
