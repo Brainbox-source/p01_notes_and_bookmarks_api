@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import asyncpg
 
 from ..schemas.note import NoteEntry
@@ -28,8 +30,22 @@ async def fetch_all_notes(pool: asyncpg.Pool) -> list[asyncpg.Record]:
         ORDER BY created_at DESC;
     """
 
-    # borrow a connection, run the query, and return the connection to the pool
     async with pool.acquire() as connection:
         records = await connection.fetch(query)
 
         return records
+
+
+# db logic to fetch a single note by its ID
+async def fetch_note_by_id(pool: asyncpg.Pool, note_id: UUID) -> asyncpg.Record | None:
+    """fetches a single note by its uuid. returns None if not found"""
+
+    query = """
+        SELECT * FROM notes
+        WHERE id = $1;
+    """
+
+    async with pool.acquire() as connection:
+        record = await connection.fetchrow(query, note_id)
+
+        return record
