@@ -51,11 +51,11 @@ async def fetch_note_by_id(pool: asyncpg.Pool, note_id: UUID) -> asyncpg.Record 
         return record
 
 
-# db logic to update a note
-async def update_note(
+# db logic to modify a note
+async def modify_note(
     pool: asyncpg.Pool, note_id: UUID, new_data: dict
 ) -> asyncpg.Record | None:
-    """updates a note and returns the updated record. returns None if note to be updated not found."""
+    """modifies a note and returns the updated record. returns None if note to be modified not found."""
 
     query = """
         UPDATE notes
@@ -73,8 +73,3 @@ async def update_note(
         )
 
         return record
-
-
-# note for gemini
-# i am using Modern Python (3.10+). While from typing import Optional was the standard approach for years, the creator of FastAPI now officially recommends avoiding it in modern Python in favor of the | None syntax or Union.
-# i also changed the schema name from NoteUpdate to NoteModification, and i changed update_data to new_data for the db logic

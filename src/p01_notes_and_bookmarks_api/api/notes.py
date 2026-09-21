@@ -3,8 +3,8 @@ from uuid import UUID
 import asyncpg
 from fastapi import APIRouter, HTTPException, Request
 
-from ..db.notes import fetch_all_notes, fetch_note_by_id, insert_note
-from ..schemas.note import Note, NoteEntry
+from ..db.notes import fetch_all_notes, fetch_note_by_id, insert_note, modify_note
+from ..schemas.note import Note, NoteEntry, NoteModification
 
 # create a router specifically for notes
 router = APIRouter(prefix="/notes", tags=["Notes"])
@@ -60,3 +60,23 @@ async def get_note(note_id: UUID, request: Request):
 
 
 # api route and endpoint to update a note
+@router.patch("/{note_id}", response_model=Note)
+async def update_note(note_id: UUID, new_data: NoteModification, request: Request):
+    """update a specific note"""
+    pool = get_db_pool(request)
+
+    # exclude_unset=True strips out any fields the user didn't explicitly send
+    update_data = new_data.model_dump(exclude_unset=True)
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="no fields provided for update.")
+
+    try:
+        record = await modify_note(pool, note_id, update_data)
+
+        if not record:
+            raise HTTPException(status_code=404, detail="note not found")
+
+        return dict(record)
+    except asyncpg.PostgresError:
+        raise HTTPException(status_code=500, detail="failed to update note.")
