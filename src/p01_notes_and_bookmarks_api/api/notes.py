@@ -57,3 +57,6 @@ async def get_note(note_id: UUID, request: Request):
         return dict(record)
     except asyncpg.PostgresError:
         raise HTTPException(status_code=500, detail="failed to fetch note")
+
+
+# api route and endpoint to update a note
