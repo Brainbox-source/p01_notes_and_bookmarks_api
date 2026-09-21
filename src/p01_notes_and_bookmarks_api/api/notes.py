@@ -3,7 +3,13 @@ from uuid import UUID
 import asyncpg
 from fastapi import APIRouter, HTTPException, Request
 
-from ..db.notes import fetch_all_notes, fetch_note_by_id, insert_note, modify_note
+from ..db.notes import (
+    fetch_all_notes,
+    fetch_note_by_id,
+    insert_note,
+    modify_note,
+    remove_note,
+)
 from ..schemas.note import Note, NoteEntry, NoteModification
 
 # create a router specifically for notes
@@ -80,3 +86,21 @@ async def update_note(note_id: UUID, new_data: NoteModification, request: Reques
         return dict(record)
     except asyncpg.PostgresError:
         raise HTTPException(status_code=500, detail="failed to update note.")
+
+
+# api route and endpoint to delete a note
+@router.delete("/{note_id}", status_code=204)
+async def delete_note(note_id: UUID, request: Request):
+    """delete a spceific note"""
+    pool = get_db_pool(request)
+
+    try:
+        deleted = await remove_note(pool, note_id)
+
+        if not deleted:
+            raise HTTPException(status_code=404, detail="note not found")
+
+        # return nothing if successful
+        return
+    except asyncpg.PostgresError:
+        raise HTTPException(status_code=500, detail="failed to delete a note")

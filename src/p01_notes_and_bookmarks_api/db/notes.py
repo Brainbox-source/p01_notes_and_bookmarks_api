@@ -76,7 +76,7 @@ async def modify_note(
 
 
 # db logic to delete a note
-async def delete_note(pool: asyncpg.Pool, note_id: UUID) -> bool:
+async def remove_note(pool: asyncpg.Pool, note_id: UUID) -> bool:
     """deletes a note by its id. returns True if deleted, False if not found."""
 
     query = """
