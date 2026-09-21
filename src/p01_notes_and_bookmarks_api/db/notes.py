@@ -73,3 +73,19 @@ async def modify_note(
         )
 
         return record
+
+
+# db logic to delete a note
+async def delete_note(pool: asyncpg.Pool, note_id: UUID) -> bool:
+    """deletes a note by its id. returns True if deleted, False if not found."""
+
+    query = """
+        DELETE FROM notes
+        WHERE id = $1
+        RETURNING id;
+    """
+
+    async with pool.acquire() as connection:
+        record = await connection.fetchrow(query, note_id)
+        # if record was not None, a row was actually deleted
+        return record is not None
