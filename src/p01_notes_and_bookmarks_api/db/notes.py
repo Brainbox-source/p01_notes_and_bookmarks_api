@@ -7,7 +7,7 @@ from ..schemas.note import NoteEntry
 
 # db logic to insert a note
 async def insert_note(pool: asyncpg.Pool, note_data: NoteEntry) -> asyncpg.Record:
-    """Inserts a new note into the database and returns the created record."""
+    """inserts a new note into the database and returns the created record."""
 
     query = """
         INSERT INTO notes(title, content)
