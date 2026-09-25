@@ -4,7 +4,7 @@ import asyncpg
 from fastapi import FastAPI, Request
 
 # import the router
-from .api import notes
+from .api import bookmarks, notes
 from .core.config import settings
 
 
@@ -28,8 +28,9 @@ async def lifespan(app: FastAPI):
 # initialize the FastAPI app with the lifespan
 app = FastAPI(lifespan=lifespan)
 
-# register the router with the main app
+# register the routers with the main app
 app.include_router(notes.router)
+app.include_router(bookmarks.router)
 
 
 # endpoint to verify the database connection

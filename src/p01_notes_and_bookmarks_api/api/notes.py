@@ -11,14 +11,10 @@ from ..db.notes import (
     remove_note,
 )
 from ..schemas.note import Note, NoteEntry, NoteModification
+from .dependencies import get_db_pool
 
 # create a router specifically for notes
 router = APIRouter(prefix="/notes", tags=["Notes"])
-
-
-# dependency to get the database pool
-def get_db_pool(request: Request) -> asyncpg.Pool:
-    return request.app.state.db_pool
 
 
 # api route and endpoint to create a note
