@@ -1,15 +1,14 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl
 
 
 # schema for incoming bookmark data
 class BookmarkEntry(BaseModel):
     title: str = Field(..., max_length=255, description="the title of the bookmark")
-    url: str = Field(
+    url: HttpUrl = Field(
         ...,
-        max_length=2083,
         description="the web address of the specific webpage for quick access",
     )
     description: str | None = Field(

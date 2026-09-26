@@ -48,7 +48,7 @@ async def get_all_notes(request: Request):
         raise HTTPException(status_code=500, detail="failed to fetch notes")
 
 
-# api route and endpoint to fetch a single note
+# api route and endpoint to fetch a note
 @router.get("/{note_id}", response_model=Note)
 async def get_note(note_id: UUID, request: Request):
     """retrieve a specific note by its id"""

@@ -42,12 +42,12 @@ async def fetch_all_bookmarks(pool: POOL) -> list[RECORD]:
         return records
 
 
-# db logic to fecth a single bookmark by its ID
+# db logic to fecth a bookmark by its ID
 async def fetch_bookmark(pool: POOL, bookmark_id: UUID) -> RECORD | None:
     """fetches a single bookmark by its id. returns None if not cound"""
 
     query = """
-        SELECT * FROM NOTES
+        SELECT * FROM bookmarks
         WHERE id = $1;
     """
 
