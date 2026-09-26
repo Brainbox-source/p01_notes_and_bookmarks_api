@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import asyncpg
 
 from ..schemas.bookmark import BookmarkEntry
@@ -34,8 +36,22 @@ async def fetch_all_bookmarks(pool: POOL) -> list[RECORD]:
         ORDER BY updated_at DESC;
     """
 
-    # borrow a connection, run the query, and return the connection to the pool
     async with pool.acquire() as connection:
         records = await connection.fetch(query)
 
         return records
+
+
+# db logic to fecth a single bookmark by its ID
+async def fetch_bookmark(pool: POOL, bookmark_id: UUID) -> RECORD | None:
+    """fetches a single bookmark by its id. returns None if not cound"""
+
+    query = """
+        SELECT * FROM NOTES
+        WHERE id = $1;
+    """
+
+    async with pool.acquire() as connection:
+        record = await connection.fetchrow(query, bookmark_id)
+
+        return record

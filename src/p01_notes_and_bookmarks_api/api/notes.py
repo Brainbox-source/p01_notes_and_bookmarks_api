@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Request
 
 from ..db.notes import (
     fetch_all_notes,
-    fetch_note_by_id,
+    fetch_note,
     insert_note,
     modify_note,
     remove_note,
@@ -55,7 +55,7 @@ async def get_note(note_id: UUID, request: Request):
     pool = get_db_pool(request)
 
     try:
-        record = await fetch_note_by_id(pool, note_id)
+        record = await fetch_note(pool, note_id)
 
         if not record:
             raise HTTPException(status_code=404, detail="note not found")

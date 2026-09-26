@@ -41,8 +41,8 @@ async def fetch_all_notes(pool: POOL) -> list[RECORD]:
 
 
 # db logic to fetch a single note by its ID
-async def fetch_note_by_id(pool: POOL, note_id: UUID) -> RECORD | None:
-    """fetches a single note by its uuid. returns None if not found"""
+async def fetch_note(pool: POOL, note_id: UUID) -> RECORD | None:
+    """fetches a single note by its id. returns None if not found"""
 
     query = """
         SELECT * FROM notes
