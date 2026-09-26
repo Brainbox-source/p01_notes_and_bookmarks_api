@@ -4,9 +4,12 @@ import asyncpg
 
 from ..schemas.note import NoteEntry
 
+POOL = asyncpg.Pool
+RECORD = asyncpg.Record
+
 
 # db logic to insert a note
-async def insert_note(pool: asyncpg.Pool, note_data: NoteEntry) -> asyncpg.Record:
+async def insert_note(pool: POOL, note_data: NoteEntry) -> RECORD:
     """inserts a new note into the database and returns the created record."""
 
     query = """
@@ -23,11 +26,12 @@ async def insert_note(pool: asyncpg.Pool, note_data: NoteEntry) -> asyncpg.Recor
 
 
 # db logic to fetch all notes
-async def fetch_all_notes(pool: asyncpg.Pool) -> list[asyncpg.Record]:
-    """fetch all notes from the database, ordered from newest to oldest"""
+async def fetch_all_notes(pool: POOL) -> list[RECORD]:
+    """fetch all notes, ordered from newest to oldest"""
+
     query = """
         SELECT * FROM notes
-        ORDER BY created_at DESC;
+        ORDER BY updated_at DESC;
     """
 
     async with pool.acquire() as connection:
@@ -37,7 +41,7 @@ async def fetch_all_notes(pool: asyncpg.Pool) -> list[asyncpg.Record]:
 
 
 # db logic to fetch a single note by its ID
-async def fetch_note_by_id(pool: asyncpg.Pool, note_id: UUID) -> asyncpg.Record | None:
+async def fetch_note_by_id(pool: POOL, note_id: UUID) -> RECORD | None:
     """fetches a single note by its uuid. returns None if not found"""
 
     query = """
@@ -52,9 +56,7 @@ async def fetch_note_by_id(pool: asyncpg.Pool, note_id: UUID) -> asyncpg.Record 
 
 
 # db logic to modify a note
-async def modify_note(
-    pool: asyncpg.Pool, note_id: UUID, new_data: dict
-) -> asyncpg.Record | None:
+async def modify_note(pool: POOL, note_id: UUID, new_data: dict) -> RECORD | None:
     """modifies a note and returns the updated record. returns None if note to be modified not found."""
 
     query = """
@@ -76,7 +78,7 @@ async def modify_note(
 
 
 # db logic to delete a note
-async def remove_note(pool: asyncpg.Pool, note_id: UUID) -> bool:
+async def remove_note(pool: POOL, note_id: UUID) -> bool:
     """deletes a note by its id. returns True if deleted, False if not found."""
 
     query = """
