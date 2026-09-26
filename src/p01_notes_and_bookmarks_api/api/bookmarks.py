@@ -8,6 +8,7 @@ from ..db.bookmarks import (
     fetch_bookmark,
     insert_bookmark,
     modify_bookmark,
+    remove_bookmark,
 )
 from ..schemas.bookmark import Bookmark, BookmarkEntry, BookmarkModification
 from .dependencies import get_db_pool
@@ -86,3 +87,20 @@ async def update_bookmark(
         return dict(record)
     except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to update bookmark.")
+
+
+# api route and endpoint to delete a bookmark
+@router.delete("/{bookmark_id}", status_code=204)
+async def delete_bookmark(bookmark_id: UUID, request: Request):
+    """delete a specific bookmark"""
+    pool = get_db_pool(request)
+
+    try:
+        deleted = await remove_bookmark(pool, bookmark_id)
+
+        if not deleted:
+            raise HTTPException(status_code=404, detail="bookmark not found")
+
+        return
+    except POSTGRES_ERROR:
+        raise HTTPException(status_code=500, detail="failed to delete bookmark")

@@ -96,7 +96,7 @@ async def remove_bookmark(pool: POOL, bookmark_id: UUID) -> bool:
     query = """
         DELETE FROM bookmarks
         WHERE id = $1
-        RETRUNING id:
+        RETURNING id;
     """
 
     async with pool.acquire() as connection:

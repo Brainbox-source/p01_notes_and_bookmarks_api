@@ -91,7 +91,7 @@ async def update_note(note_id: UUID, new_data: NoteModification, request: Reques
 # api route and endpoint to delete a note
 @router.delete("/{note_id}", status_code=204)
 async def delete_note(note_id: UUID, request: Request):
-    """delete a spceific note"""
+    """delete a specific note"""
     pool = get_db_pool(request)
 
     try:
@@ -103,4 +103,4 @@ async def delete_note(note_id: UUID, request: Request):
         # return nothing if successful
         return
     except POSTGRES_ERROR:
-        raise HTTPException(status_code=500, detail="failed to delete a note")
+        raise HTTPException(status_code=500, detail="failed to delete note")
