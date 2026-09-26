@@ -31,7 +31,7 @@ async def fetch_all_bookmarks(pool: POOL) -> list[RECORD]:
 
     query = """
         SELECT * FROM bookmarks
-        ORDER BY created_at DESC;
+        ORDER BY updated_at DESC;
     """
 
     # borrow a connection, run the query, and return the connection to the pool

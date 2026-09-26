@@ -16,6 +16,8 @@ from .dependencies import get_db_pool
 # create a router specifically for notes
 router = APIRouter(prefix="/notes", tags=["Notes"])
 
+POSTGRES_ERROR = asyncpg.PostgresError
+
 
 # api route and endpoint to create a note
 @router.post("/", response_model=Note, status_code=201)
@@ -25,8 +27,9 @@ async def create_note(note_data: NoteEntry, request: Request):
 
     try:
         record = await insert_note(pool, note_data)
+
         return dict(record)
-    except asyncpg.PostgresError:
+    except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to create a note")
 
 
@@ -38,9 +41,10 @@ async def get_all_notes(request: Request):
 
     try:
         records = await fetch_all_notes(pool)
+
         # convert the list of asyncpg.Records into a list of standard dictionaries
         return [dict(record) for record in records]
-    except asyncpg.PostgresError:
+    except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to fetch notes")
 
 
@@ -57,7 +61,7 @@ async def get_note(note_id: UUID, request: Request):
             raise HTTPException(status_code=404, detail="note not found")
 
         return dict(record)
-    except asyncpg.PostgresError:
+    except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to fetch note")
 
 
@@ -80,7 +84,7 @@ async def update_note(note_id: UUID, new_data: NoteModification, request: Reques
             raise HTTPException(status_code=404, detail="note not found")
 
         return dict(record)
-    except asyncpg.PostgresError:
+    except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to update note.")
 
 
@@ -98,5 +102,5 @@ async def delete_note(note_id: UUID, request: Request):
 
         # return nothing if successful
         return
-    except asyncpg.PostgresError:
+    except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to delete a note")
