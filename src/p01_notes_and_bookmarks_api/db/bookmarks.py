@@ -87,3 +87,19 @@ async def modify_bookmark(
         )
 
         return record
+
+
+# db logic to delete a bookmark
+async def remove_bookmark(pool: POOL, bookmark_id: UUID) -> bool:
+    """deletes a bookmark by its id. returns True if deleted, False if not found."""
+
+    query = """
+        DELETE FROM bookmarks
+        WHERE id = $1
+        RETRUNING id:
+    """
+
+    async with pool.acquire() as connection:
+        record = await connection.fetchrow(query, bookmark_id)
+
+        return record is not None
