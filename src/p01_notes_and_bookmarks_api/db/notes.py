@@ -8,7 +8,7 @@ POOL = asyncpg.Pool
 RECORD = asyncpg.Record
 
 
-# db logic to insert a note
+# insert a note
 async def insert_note(pool: POOL, note_data: NoteEntry) -> RECORD:
     """inserts a new note into the database and returns the created record."""
 
@@ -18,14 +18,13 @@ async def insert_note(pool: POOL, note_data: NoteEntry) -> RECORD:
         RETURNING *;
     """
 
-    # borrow a connection, run the query, and return the connection to the pool
     async with pool.acquire() as connection:
         record = await connection.fetchrow(query, note_data.title, note_data.content)
 
         return record
 
 
-# db logic to fetch all notes
+# fetch all notes
 async def fetch_all_notes(pool: POOL) -> list[RECORD]:
     """fetch all notes, ordered from newest to oldest"""
 
@@ -40,7 +39,7 @@ async def fetch_all_notes(pool: POOL) -> list[RECORD]:
         return records
 
 
-# db logic to fetch a note by its ID
+# fetch a note by its ID
 async def fetch_note(pool: POOL, note_id: UUID) -> RECORD | None:
     """fetches a single note by its id. returns None if not found"""
 
@@ -55,7 +54,7 @@ async def fetch_note(pool: POOL, note_id: UUID) -> RECORD | None:
         return record
 
 
-# db logic to modify a note
+# modify a note
 async def modify_note(pool: POOL, note_id: UUID, new_data: dict) -> RECORD | None:
     """modifies a note and returns the updated record. returns None if note to be modified not found."""
 
@@ -77,7 +76,7 @@ async def modify_note(pool: POOL, note_id: UUID, new_data: dict) -> RECORD | Non
         return record
 
 
-# db logic to delete a note
+# delete a note
 async def remove_note(pool: POOL, note_id: UUID) -> bool:
     """deletes a note by its id. returns True if deleted, False if not found."""
 

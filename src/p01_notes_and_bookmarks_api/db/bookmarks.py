@@ -8,7 +8,7 @@ POOL = asyncpg.Pool
 RECORD = asyncpg.Record
 
 
-# db logic to insert a bookmark
+# insert a bookmark
 async def insert_bookmark(pool: POOL, bookmark_data: BookmarkEntry) -> RECORD:
     """inserts a new bookmark into the database and returns the record."""
 
@@ -30,7 +30,7 @@ async def insert_bookmark(pool: POOL, bookmark_data: BookmarkEntry) -> RECORD:
         return record
 
 
-# db logic to fetch all bookmarks
+# fetch all bookmarks
 async def fetch_all_bookmarks(pool: POOL) -> list[RECORD]:
     """fetch all bookmarks, ordered from newest to oldest"""
 
@@ -45,7 +45,7 @@ async def fetch_all_bookmarks(pool: POOL) -> list[RECORD]:
         return records
 
 
-# db logic to fecth a bookmark by its ID
+# fecth a bookmark by its ID
 async def fetch_bookmark(pool: POOL, bookmark_id: UUID) -> RECORD | None:
     """fetches a single bookmark by its id. returns None if not cound"""
 
@@ -60,7 +60,7 @@ async def fetch_bookmark(pool: POOL, bookmark_id: UUID) -> RECORD | None:
         return record
 
 
-# db logic to modify a bookmark
+# modify a bookmark
 async def modify_bookmark(
     pool: POOL, bookmark_id: UUID, new_data: dict
 ) -> RECORD | None:
@@ -77,11 +77,14 @@ async def modify_bookmark(
         RETURNING *;
     """
 
+    raw_url = new_data.get("url")
+    url = str(raw_url) if raw_url is not None else None
+
     async with pool.acquire() as connection:
         record = await connection.fetchrow(
             query,
             new_data.get("title"),
-            str(new_data.get("url")),
+            url,
             new_data.get("description"),
             bookmark_id,
         )
@@ -89,7 +92,7 @@ async def modify_bookmark(
         return record
 
 
-# db logic to delete a bookmark
+# delete a bookmark
 async def remove_bookmark(pool: POOL, bookmark_id: UUID) -> bool:
     """deletes a bookmark by its id. returns True if deleted, False if not found."""
 
