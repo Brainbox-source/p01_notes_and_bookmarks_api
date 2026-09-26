@@ -27,3 +27,10 @@ class Bookmark(BaseModel):
 
     # parse from asyncpg Records
     model_config = ConfigDict(from_attributes=True)
+
+
+# schema for updating bookmarks
+class BookmarkModification(BaseModel):
+    title: str | None = Field(default=None, max_length=255)
+    url: HttpUrl | None = Field(default=None)
+    description: str | None = Field(default=None)

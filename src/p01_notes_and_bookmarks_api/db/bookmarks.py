@@ -21,7 +21,10 @@ async def insert_bookmark(pool: POOL, bookmark_data: BookmarkEntry) -> RECORD:
     # borrow a connection, run the query, and return the connection to the pool
     async with pool.acquire() as connection:
         record = await connection.fetchrow(
-            query, bookmark_data.title, bookmark_data.url, bookmark_data.description
+            query,
+            bookmark_data.title,
+            str(bookmark_data.url),
+            bookmark_data.description,
         )
 
         return record
