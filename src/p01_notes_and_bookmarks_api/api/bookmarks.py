@@ -3,8 +3,13 @@ from uuid import UUID
 import asyncpg
 from fastapi import APIRouter, HTTPException, Request
 
-from ..db.bookmarks import fetch_all_bookmarks, fetch_bookmark, insert_bookmark
-from ..schemas.bookmark import Bookmark, BookmarkEntry
+from ..db.bookmarks import (
+    fetch_all_bookmarks,
+    fetch_bookmark,
+    insert_bookmark,
+    modify_bookmark,
+)
+from ..schemas.bookmark import Bookmark, BookmarkEntry, BookmarkModification
 from .dependencies import get_db_pool
 
 # router specifically for bookmarks
@@ -56,3 +61,28 @@ async def get_bookmark(bookmark_id: UUID, request: Request):
         return dict(record)
     except POSTGRES_ERROR:
         raise HTTPException(status_code=500, detail="failed to fetch bookmark")
+
+
+# api route and endpoint to update a bookmark
+@router.patch("/{bookmark_id}", response_model=Bookmark)
+async def update_bookmark(
+    bookmark_id: UUID, new_data: BookmarkModification, request: Request
+):
+    """update a specific bookmark"""
+    pool = get_db_pool(request)
+
+    # strip out any field the user didn't send
+    data_update = new_data.model_dump(exclude_unset=True)
+
+    if not data_update:
+        raise HTTPException(status_code=400, detail="no fields provided for update.")
+
+    try:
+        record = await modify_bookmark(pool, bookmark_id, data_update)
+
+        if not record:
+            raise HTTPException(status_code=404, detail="bookmark not found")
+
+        return dict(record)
+    except POSTGRES_ERROR:
+        raise HTTPException(status_code=500, detail="failed to update bookmark.")

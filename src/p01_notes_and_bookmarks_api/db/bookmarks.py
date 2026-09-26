@@ -81,7 +81,7 @@ async def modify_bookmark(
         record = await connection.fetchrow(
             query,
             new_data.get("title"),
-            new_data.get("url"),
+            str(new_data.get("url")),
             new_data.get("description"),
             bookmark_id,
         )

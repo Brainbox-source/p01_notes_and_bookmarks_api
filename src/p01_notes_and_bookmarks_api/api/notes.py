@@ -71,14 +71,14 @@ async def update_note(note_id: UUID, new_data: NoteModification, request: Reques
     """update a specific note"""
     pool = get_db_pool(request)
 
-    # exclude_unset=True strips out any fields the user didn't explicitly send
-    update_data = new_data.model_dump(exclude_unset=True)
+    # exclude_unset=True strips out any field the user didn't explicitly send
+    data_update = new_data.model_dump(exclude_unset=True)
 
-    if not update_data:
+    if not data_update:
         raise HTTPException(status_code=400, detail="no fields provided for update.")
 
     try:
-        record = await modify_note(pool, note_id, update_data)
+        record = await modify_note(pool, note_id, data_update)
 
         if not record:
             raise HTTPException(status_code=404, detail="note not found")
