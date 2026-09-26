@@ -58,3 +58,32 @@ async def fetch_bookmark(pool: POOL, bookmark_id: UUID) -> RECORD | None:
         record = await connection.fetchrow(query, bookmark_id)
 
         return record
+
+
+# db logic to modify a bookmark
+async def modify_bookmark(
+    pool: POOL, bookmark_id: UUID, new_data: dict
+) -> RECORD | None:
+    """modifies a bookmark and returns the updated record. returns None if bookmark to be modified not found."""
+
+    query = """
+        UPDATE bookmarks
+        SET
+            title = COALESCE($1, title),
+            url = COALESCE($2, url),
+            description = COALESCE($3, description),
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = $4
+        RETURNING *;
+    """
+
+    async with pool.acquire() as connection:
+        record = await connection.fetchrow(
+            query,
+            new_data.get("title"),
+            new_data.get("url"),
+            new_data.get("description"),
+            bookmark_id,
+        )
+
+        return record
